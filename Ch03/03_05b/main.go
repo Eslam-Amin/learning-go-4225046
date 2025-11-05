@@ -7,72 +7,52 @@ import (
 	"time"
 )
 
+var (
+	lettersLower = []rune("abcdefghijklmnopqrstuvwxyz")
+	lettersUpper = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+)
+
 func main() {
-	fmt.Println("Starting ...")
-	nowTime := time.Now()
-	states := make(map[string]string)
-	counter := 0
-	for {
-		states[createRandomStrings("upper", 3)] = createRandomStrings("lower", 10)
+	fmt.Println("Starting...")
+	start := time.Now()
+	const iterations = 100000000
+	states := make(map[string]string, iterations)
 
-
-		counter++
-		if counter == 100 {
-			break
-		}
+	for i := 0; i < iterations; i++ {
+		key := createRandomString("upper", 3)
+		value := createRandomString("lower", 10)
+		states[key] = value
 	}
-	finishedTime := time.Now()
-	// getKeyAndValue(states)
-	fmt.Println("Finished in", finishedTime.Sub(nowTime))
-	// delete(states,"CA")
-	sortedStatesMap := sortMap(states)
-	// fmt.Println("sortedStatesMap", sortedStatesMap)
-	getKeyAndValue(sortedStatesMap)
+
+	printSortedMap(states)
+
+	fmt.Println("Finished in", time.Since(start))
 }
 
-func createRandomStrings (choice string, lenOfString int) string{
-	lettersLower := []rune("abcdefghijklmnopqrstuvwxyz")
-	lettersUpper := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	randomString := make([]rune, lenOfString)
+func createRandomString(choice string, numOfLetters int) string {
 	var letters []rune
 	switch choice {
 	case "upper":
 		letters = lettersUpper
-	case "lower":
-		letters = lettersLower
 	default:
 		letters = lettersLower
 	}
+
+	randomString := make([]rune, numOfLetters)
 	for i := range randomString {
 		randomString[i] = letters[rand.Intn(len(letters))]
 	}
-	// fmt.Println(randomString, string(randomString))
 	return string(randomString)
 }
 
-
-
-func getKeyAndValue(states map[string]string)  {
-	for key, value := range states {
-		fmt.Println("the key is", key, "and the value is", value) 
-	}
-}
-
-
-
-func sortMap(mapToBeSorted map[string]string)map[string]string  {
-	keys := make([]string, len(mapToBeSorted))
-	i := 0
-	for k := range mapToBeSorted {
-		keys[i] = k
-		i++
+func printSortedMap(mapToBePrinted map[string]string) {
+	keys := make([]string, 0, len(mapToBePrinted))
+	for k := range mapToBePrinted {
+		keys = append(keys, k)
 	}
 	sort.Strings(keys)
-	newSortedMap := make(map[string]string)
-	for i:= range keys {
-		fmt.Println(keys[i])
-		newSortedMap[keys[i]] = mapToBeSorted[keys[i]]
+
+	for _, k := range keys {
+		fmt.Printf("The key is %-5s and the value is %s\n", k, mapToBePrinted[k])
 	}
-	fmt.Println("sortedStatesMap", newSortedMap)
-	return newSortedMap
 }
